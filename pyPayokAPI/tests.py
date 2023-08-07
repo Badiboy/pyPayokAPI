@@ -41,6 +41,6 @@ def test_api_functions():
     run_and_print(lambda: client.transaction(test_shop_id))
     run_and_print(lambda: client.payout())
     run_and_print(lambda: client.payout_create(1, PaymentMethod.qiwi, "79111111111", PaymentCommissionType.payment))
-    run_and_print(lambda: client.payment_link_create(10, 1234, test_shop_id, "Test payment link", 'RUB'))
+    run_and_print(lambda: client.payment_link_create(10, 2, test_shop_id, "Test payment link", 'RUB'))
 
 test_api_functions()

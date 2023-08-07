@@ -148,6 +148,10 @@ class Transaction(JsonDeserializable):
         instance.comission_percent = float(instance.comission_percent)
         instance.comission_fixed = float(instance.comission_fixed)
         instance.amount_profit = float(instance.amount_profit)
+        try:
+            instance.method = PaymentMethod[instance.method.lower()]
+        except:
+            instance.method = PaymentMethod.unknown
         instance.payment_id = int(instance.payment_id)
         instance.date = datetime.strptime(instance.date, "%Y-%m-%d %H:%M:%S")
         instance.pay_date = datetime.strptime(instance.pay_date, "%Y-%m-%d %H:%M:%S")
@@ -231,10 +235,17 @@ class Payout(JsonDeserializable):
         data = cls.check_json(json_dict)
         instance = super(Payout, cls).de_json(data, process_mode=2)
         instance.num = num
+        instance.payout_id = int(instance.payout_id)
         try:
-            instance.method = PaymentMethod[instance.method]
+            instance.method = PaymentMethod[instance.method.lower()]
         except:
             instance.method = PaymentMethod.unknown
+        instance.amount = float(instance.amount)
+        instance.comission_percent = float(instance.comission_percent)
+        instance.comission_fixed = float(instance.comission_fixed)
+        instance.amount_profit = float(instance.amount_profit)
+        instance.date_create = datetime.strptime(instance.date_create, "%Y-%m-%d %H:%M:%S")
+        instance.date_pay = datetime.strptime(instance.date_pay, "%Y-%m-%d %H:%M:%S")
         if not(instance.status is None):
             try:
                 instance.status = PaymentStatus(int(instance.status))
