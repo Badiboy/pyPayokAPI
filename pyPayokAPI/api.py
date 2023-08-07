@@ -236,7 +236,7 @@ class pyPayokAPI:
         :param payment: Order ID (unique in your system, up to 36 characters)
         :param shop: Your shop ID
         :param desc: Product name or description
-        :param currency: Currency (see Currency)
+        :param currency: Currency
         :param email: (Optional) Customer email
         :param success_url: (Optional) URL to redirect after payment
         :param method: (Optional) Payment method (see PaymentMethod)
@@ -245,9 +245,6 @@ class pyPayokAPI:
         """
         if not self.secret_key:
             raise pyPayokAPIException(-7, "No secret key provided when creating pyPayokAPI")
-
-        if isinstance(currency, PaymentCurrency):
-            currency = currency.name
 
         sign_data = [
             amount,

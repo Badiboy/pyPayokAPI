@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from abc import ABC
 from enum import Enum
 
@@ -60,7 +61,7 @@ class JsonDeserializable(ABC):
         instance = cls()
         if process_mode == 2:
             for key, value in json_dict.items():
-                if key.isdigit(): pass
+                if key.isdigit(): continue
                 setattr(instance, key, value)
         return instance
 
@@ -114,15 +115,6 @@ class Balance(JsonDeserializable):
         return instance
 
 
-class PaymentCurrency(Enum):
-    RUB = "Rubles"
-    USD = "US Dollars"
-    EUR = "Euro"
-    UAH = "Hryvnias"
-    RUB2 = "Rubles (Alternative gateway)"
-    Unknown = "Unknown"
-
-
 # noinspection PyMethodOverriding
 class Transaction(JsonDeserializable):
     def __init__(self):
@@ -150,10 +142,21 @@ class Transaction(JsonDeserializable):
         data = cls.check_json(json_dict)
         instance = super(Transaction, cls).de_json(data, process_mode=2)
         instance.num = num
-        if instance.currency and (instance.currency in PaymentCurrency.__members__):
-            instance.currency = PaymentCurrency(instance.currency)
-        else:
-            instance.currency = PaymentCurrency.Unknown
+        instance.transaction = int(instance.transaction)
+        instance.amount = float(instance.amount)
+        instance.currency_amount = float(instance.currency_amount)
+        instance.comission_percent = float(instance.comission_percent)
+        instance.comission_fixed = float(instance.comission_fixed)
+        instance.amount_profit = float(instance.amount_profit)
+        instance.payment_id = int(instance.payment_id)
+        instance.date = datetime.strptime(instance.date, "%Y-%m-%d %H:%M:%S")
+        instance.pay_date = datetime.strptime(instance.pay_date, "%Y-%m-%d %H:%M:%S")
+        try:
+            instance.transaction_status = PaymentStatus(int(instance.transaction_status))
+        except:
+            instance.transaction_status = PaymentStatus.unknown
+        instance.webhook_status = int(instance.webhook_status)
+        instance.webhook_amount = int(instance.webhook_amount)
         return instance
 
 
@@ -168,7 +171,7 @@ class Transactions(JsonDeserializable):
         instance = super(Transactions, cls).de_json(data, process_mode=2)
         instance.items = []
         for key, value in data.items():
-            if not key.isdigit(): pass
+            if not key.isdigit(): continue
             transaction = Transaction.de_json(json.dumps(value), int(key))
             instance.items.append(transaction)
         return instance
@@ -194,7 +197,7 @@ class PaymentMethod(Enum):
     unknown = "Unknown"
 
 
-class PayoutStatus(Enum):
+class PaymentStatus(Enum):
     waiting = 0
     success = 1
     fail = 2
@@ -228,19 +231,25 @@ class Payout(JsonDeserializable):
         data = cls.check_json(json_dict)
         instance = super(Payout, cls).de_json(data, process_mode=2)
         instance.num = num
-        if instance.method and (instance.method in PaymentMethod.__members__):
-            instance.method = PaymentMethod(instance.method)
-        else:
+        try:
+            instance.method = PaymentMethod[instance.method]
+        except:
             instance.method = PaymentMethod.unknown
-        if instance.status and (instance.status in PayoutStatus.__members__):
-            instance.status = PayoutStatus(instance.status)
+        if not(instance.status is None):
+            try:
+                instance.status = PaymentStatus(int(instance.status))
+            except:
+                instance.status = PaymentStatus.unknown
             instance.payout_status_code = instance.status.value
-        elif instance.payout_status_code and (instance.payout_status_code in PayoutStatus.__members__):
-            instance.payout_status_code = PayoutStatus(instance.payout_status_code)
+        elif not(instance.payout_status_code is None):
+            try:
+                instance.payout_status_code = PaymentStatus(int(instance.payout_status_code))
+            except:
+                instance.payout_status_code = PaymentStatus.unknown
             instance.status = instance.payout_status_code.value
         else:
-            instance.status = PayoutStatus.unknown
-            instance.payout_status_code = PayoutStatus.unknown
+            instance.status = PaymentStatus.unknown
+            instance.payout_status_code = PaymentStatus.unknown
         return instance
 
 
