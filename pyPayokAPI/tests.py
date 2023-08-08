@@ -1,9 +1,9 @@
 import inspect
 from time import sleep
 try:
-    from pyPayokAPI import pyPayokAPI, pyPayokAPIException, PaymentMethod, PaymentCommissionType
+    from pyPayokAPI import pyPayokAPI, pyPayokAPIException, PaymentMethod, PaymentCommissionType, PaymentStatus
 except:
-    from api import pyPayokAPI, pyPayokAPIException, PaymentMethod, PaymentCommissionType
+    from api import pyPayokAPI, pyPayokAPIException, PaymentMethod, PaymentCommissionType, PaymentStatus
 
 try:
     from private_keys import *
@@ -39,8 +39,9 @@ def test_api_functions():
     client = pyPayokAPI(test_api_id, test_api_key, secret_key=test_secret_key, print_errors=True)
     run_and_print(lambda: client.balance())
     run_and_print(lambda: client.transaction(test_shop_id))
+    run_and_print(lambda: client.transactions(test_shop_id, status=PaymentStatus.success))
     run_and_print(lambda: client.payout())
     run_and_print(lambda: client.payout_create(1, PaymentMethod.qiwi, "79111111111", PaymentCommissionType.payment))
-    run_and_print(lambda: client.payment_link_create(10, 2, test_shop_id, "Test payment link", 'RUB'))
+    run_and_print(lambda: client.payment_link_create(10, "xxx 2", test_shop_id, "Test payment link", 'RUB'))
 
 test_api_functions()

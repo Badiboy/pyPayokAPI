@@ -2,6 +2,7 @@ import requests
 import hashlib
 import urllib
 import urllib.parse
+from time import sleep
 
 from .payok_types import *
 
@@ -149,17 +150,46 @@ class pyPayokAPI:
                 raise pe
         return Transactions.de_json(resp)
 
-    def transactions(self, shop, payment = None, offset = None):
+    def transactions(self, shop, max_results = 15, max_pages = 10, status = None):
         """
-        Get transactions list (alias for "transaction").
-        Max 100 records, use offset to get more.
-        https://payok.io/cabinet/documentation/doc_api_transaction
+        Get transactions list (advanced method for "transaction").
 
         :param shop: Shop ID
-        :param payment: (Optional) Payment ID (only one record with this payment will be returned)
-        :param offset: (Optional) Offset (skip given number of transactions)
+        :param max_results: (Int, Optional, default=15) Max number of results to collect
+        :param max_pages: (Int, Optional, default=10) Max number of pages to process
+        :param status: (PaymentStatus, Optional) Filter by status
         """
-        return self.transaction(shop, payment=payment, offset=offset)
+
+        result = Transactions()
+
+        page_number = 0
+        page_size = 100
+        offset = 0
+        while page_number < max_pages:
+            if page_number > 0: sleep(1)
+            resp = self.transaction(shop, offset = offset)
+
+            if not resp.items:
+                # No (more) transactions
+                break
+
+            for transaction in resp.items:
+                if transaction.transaction_status != status:
+                    continue
+                result.items.append(transaction)
+
+                if len(result.items) >= max_results:
+                    # Enough results collected
+                    break
+
+            if len(result.items) >= max_results:
+                # Enough results collected
+                break
+
+            offset += page_size
+            page_number += 1
+
+        return result
 
 
     def payout(self, payout_id = None, offset = None):
@@ -189,17 +219,6 @@ class pyPayokAPI:
             else:
                 raise pe
         return Payouts.de_json(resp)
-
-    def payouts(self, payout_id = None, offset = None):
-        """
-        Get payouts list (alias for "payout").
-        Max 100 records, use offset to get more.
-        https://payok.io/cabinet/documentation/doc_api_payout
-
-        :param payout_id: (Optional) Payment ID (only one record with this payout will be returned)
-        :param offset: (Optional) Offset (skip given number of payouts)
-        """
-        return self.payout(payout_id=payout_id, offset=offset)
 
 
     def payout_create(self, amount, method, reciever, comission_type, webhook_url = None):
@@ -258,7 +277,7 @@ class pyPayokAPI:
 
         url = "https://payok.io/pay?amount={amount}&payment={payment}&shop={shop}&desc={desc}&currency={currency}&sign={sign}".format(
             amount=amount,
-            payment=payment,
+            payment=urllib.parse.quote(payment),
             shop=shop,
             desc=urllib.parse.quote(desc),
             currency=currency,

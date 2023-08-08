@@ -152,7 +152,7 @@ class Transaction(JsonDeserializable):
             instance.method = PaymentMethod[instance.method.lower()]
         except:
             instance.method = PaymentMethod.unknown
-        instance.payment_id = int(instance.payment_id)
+        #instance.payment_id = int(instance.payment_id)
         instance.date = datetime.strptime(instance.date, "%Y-%m-%d %H:%M:%S")
         instance.pay_date = datetime.strptime(instance.pay_date, "%Y-%m-%d %H:%M:%S")
         try:
