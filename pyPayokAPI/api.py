@@ -270,7 +270,7 @@ class pyPayokAPI:
             payment,
             shop,
             currency,
-            desc,
+            desc if desc else "",
             self.secret_key,
         ]
         sign = hashlib.md5("|".join(map(str, sign_data)).encode("utf-8")).hexdigest()
@@ -279,7 +279,7 @@ class pyPayokAPI:
             amount=amount,
             payment=urllib.parse.quote(payment),
             shop=shop,
-            desc=urllib.parse.quote(desc),
+            desc=urllib.parse.quote(desc if desc else ""),
             currency=currency,
             sign=sign,
         )
