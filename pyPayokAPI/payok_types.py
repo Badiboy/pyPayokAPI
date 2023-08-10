@@ -149,9 +149,9 @@ class Transaction(JsonDeserializable):
         instance.comission_fixed = float(instance.comission_fixed)
         instance.amount_profit = float(instance.amount_profit)
         try:
-            instance.method = PaymentMethod[instance.method.lower()]
+            instance.method = PayoutMethod[instance.method.lower()]
         except:
-            instance.method = PaymentMethod.unknown
+            instance.method = PayoutMethod.unknown
         #instance.payment_id = int(instance.payment_id)
         instance.date = datetime.strptime(instance.date, "%Y-%m-%d %H:%M:%S")
         instance.pay_date = datetime.strptime(instance.pay_date, "%Y-%m-%d %H:%M:%S")
@@ -181,7 +181,7 @@ class Transactions(JsonDeserializable):
         return instance
 
 
-class PaymentMethod(Enum):
+class PayoutMethod(Enum):
     card = "Bank card"
     card_uah = "Bank card (Ukraine)"
     card_foreign = "Bank card (Foreign)"
@@ -237,9 +237,9 @@ class Payout(JsonDeserializable):
         instance.num = num
         instance.payout_id = int(instance.payout_id)
         try:
-            instance.method = PaymentMethod[instance.method.lower()]
+            instance.method = PayoutMethod[instance.method.lower()]
         except:
-            instance.method = PaymentMethod.unknown
+            instance.method = PayoutMethod.unknown
         instance.amount = float(instance.amount)
         instance.comission_percent = float(instance.comission_percent)
         instance.comission_fixed = float(instance.comission_fixed)
@@ -279,3 +279,18 @@ class Payouts(JsonDeserializable):
             payout = Payout.de_json(json.dumps(value), int(key))
             instance.items.append(payout)
         return instance
+
+
+class PaymentMethod(Enum):
+    cd = "Bank card"
+    qw = "Qiwi"
+    ya = "Yoomoney"
+    wm = "Webmoney"
+    pr = "Payeer"
+    pm = "Perfect Money"
+    ad = "Advcash"
+    mg = "Megafon"
+    bt = "Bitcoin"
+    th = "Tether USDT"
+    lt = "Litecoin"
+    dg = "Dogecoin"

@@ -227,7 +227,7 @@ class pyPayokAPI:
         https://payok.io/cabinet/documentation/doc_api_payout_create
 
         :param amount: Amount to payout
-        :param method: Payout method (see PaymentMethod)
+        :param method: Payout method (see PayoutMethod)
         :param reciever: Reciever credentials
         :param comission_type: Comission type (see PayoutCommissionType)
         :param webhook_url: (Optional) Webhook URL to call when payout status changes
@@ -235,7 +235,7 @@ class pyPayokAPI:
         _method = "payout_create"
         params = {
             "amount": amount,
-            "method": method.name if isinstance(method, PaymentMethod) else method,
+            "method": method.name if isinstance(method, PayoutMethod) else method,
             "reciever": reciever,
             "comission_type": comission_type.name if isinstance(comission_type, PaymentCommissionType) else comission_type,
         }
@@ -258,7 +258,7 @@ class pyPayokAPI:
         :param currency: Currency
         :param email: (Optional) Customer email
         :param success_url: (Optional) URL to redirect after payment
-        :param method: (Optional) Payment method (see PaymentMethod)
+        :param method: (Optional) Payment method / list of methods (see PaymentMethod)
         :param lang: (Optional) Interface language (RU or EN)
         :param custom: (Optional) Your custom parameter to pass in notification
         """
@@ -289,7 +289,10 @@ class pyPayokAPI:
             success_url = urllib.parse.quote_plus(success_url)
             url += f"&success_url={success_url}"
         if method:
-            url += f"&method={method}"
+            if isinstance(method, PaymentMethod):
+                url += f"&method={method.name}"
+            else:
+                url += f"&method={method}"
         if lang:
             url += f"&lang={lang}"
         if custom:
