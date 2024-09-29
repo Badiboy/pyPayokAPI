@@ -2,11 +2,12 @@ import requests
 import hashlib
 import urllib
 import urllib.parse
+import urllib3
 from time import sleep
 
 from .payok_types import *
 
-API_URL = "https://payok.io/api/"
+API_URL = "https://payok.online/api/"
 
 
 # noinspection PyPep8Naming
@@ -26,7 +27,7 @@ class pyPayokAPI:
 
     def __init__(self, api_id, api_key,
                  secret_key = None,
-                 print_errors = False, timeout = None):
+                 print_errors = False, timeout = None, IPv6_disable = True):
         """
         Create the pyPayokAPI instance.
 
@@ -41,7 +42,8 @@ class pyPayokAPI:
         self.secret_key = secret_key
         self.print_errors = print_errors
         self.timeout = timeout
-
+        if IPv6_disable:
+            urllib3.util.connection.HAS_IPV6 = False
 
     def __request(self, method_url, **kwargs):
         """
