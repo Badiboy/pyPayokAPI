@@ -3,7 +3,7 @@
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyPayokAPI.svg)](https://pypi.org/project/pyPayokAPI/)
 
 # <p align="center">pyPayokAPI</p>
-Python implementation of [Payok.io](https://payok.io) public [API](https://payok.io/cabinet/documentation/doc_main.php)
+Python implementation of [Payok.io](https://payok.online) public [API](https://payok.online/cabinet/documentation/doc_main.php)
 
 **This library may not fully implement API. However I will continue to maintain it, so if you need some not implemented methods - just open an issue.**
 
@@ -14,7 +14,7 @@ $ pip install pyPayokAPI
 ```
 
 # Usage
-Everything is as simple as the [API](https://payok.io/cabinet/documentation/doc_main.php) itself.
+Everything is as simple as the [API](https://payok.online/cabinet/documentation/doc_main.php) itself.
 1. Create pyPayokAPI instance
 2. Access API methods
 3. Most methods return result as correspondent class, so you can access data as fields 
